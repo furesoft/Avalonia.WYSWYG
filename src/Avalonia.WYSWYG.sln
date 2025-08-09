@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.WYSWYG.Widgets.Map
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.WYSWYG.Widgets.Markdown", "Widgets\Avalonia.WYSWYG.Widgets.Markdown\Avalonia.WYSWYG.Widgets.Markdown.csproj", "{48583C68-DC85-41E9-AC4F-2E743EB221DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.WYSWYG.Widgets.ProcessChain", "Widgets\Avalonia.WYSWYG.Widgets.ProcessChain\Avalonia.WYSWYG.Widgets.ProcessChain.csproj", "{CC668F2C-468E-464F-86B1-C45811B53A38}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,15 +38,10 @@ Global
 		{48583C68-DC85-41E9-AC4F-2E743EB221DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48583C68-DC85-41E9-AC4F-2E743EB221DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48583C68-DC85-41E9-AC4F-2E743EB221DB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC668F2C-468E-464F-86B1-C45811B53A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC668F2C-468E-464F-86B1-C45811B53A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC668F2C-468E-464F-86B1-C45811B53A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC668F2C-468E-464F-86B1-C45811B53A38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{54831E91-E875-43E2-AEED-15D91252FE19} = {6AE30327-DCBE-4121-A1EE-B3739F023E48}
 		{FF867EEA-C3F6-40B5-8513-A07BBCB5778E} = {6AE30327-DCBE-4121-A1EE-B3739F023E48}
 		{48583C68-DC85-41E9-AC4F-2E743EB221DB} = {6AE30327-DCBE-4121-A1EE-B3739F023E48}
-		{CC668F2C-468E-464F-86B1-C45811B53A38} = {6AE30327-DCBE-4121-A1EE-B3739F023E48}
 	EndGlobalSection
 EndGlobal

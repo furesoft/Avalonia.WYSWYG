@@ -4,6 +4,13 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Avalonia.WYSWYG/Controls/AddWidgetButton.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Avalonia.WYSWYG/Default.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Sandbox/App.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Sandbox/Views/MainWindow.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Widgets/Avalonia.WYSWYG.Widgets.ProcessChain/Graph/Designer/Layout/Views/Documents/GraphDocumentView.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Widgets/Avalonia.WYSWYG.Widgets.ProcessChain/Graph/Editor/Themes/Controls/Toolbox.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Widgets/Avalonia.WYSWYG.Widgets.ProcessChain/Graph/NodeViews/DefaultNodeView.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Widgets/Avalonia.WYSWYG.Widgets.ProcessChain/Graph/NodeViews/SubgraphView.axaml" value="Sandbox/Sandbox.csproj" />
       </map>
     </option>
   </component>

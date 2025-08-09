@@ -47,8 +47,8 @@ public class AddWidgetButton : TemplatedControl
             return;
         }
 
-        var blockStorage = ContainerLocator.Current.Resolve<WidgetStorage>();
-        var block = blockStorage.Instanciate(model.ID);
+        var blockStorage = (WidgetStorage)Splat.Locator.Current.GetService(typeof(WidgetStorage));
+        var block = blockStorage?.Instanciate(model.ID);
 
         block.IsEditMode = true;
         Display.Items.Add(block);

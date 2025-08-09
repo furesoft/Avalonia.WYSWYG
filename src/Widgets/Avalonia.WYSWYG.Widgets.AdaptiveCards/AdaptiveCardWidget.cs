@@ -1,4 +1,6 @@
-﻿namespace Avalonia.WYSWYG.Widgets.AdaptiveCards;
+﻿using Material.Icons;
+
+namespace Avalonia.WYSWYG.Widgets.AdaptiveCards;
 
 public static class AdaptiveCardWidget
 {

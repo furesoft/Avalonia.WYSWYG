@@ -13,7 +13,7 @@
           <controls:ImagePopupButton.PopupContent>
             <Border Width="150" Height="150" Background="White">
               <ListBox Name="PART_Items"
-                       ItemsSource="{Binding Widgets, Source={core:ServiceContainer {x:Type WidgetStorage}}}">
+                       ItemsSource="{Binding Widgets, Source={controls:ServiceContainer {x:Type controls:WidgetStorage}}}">
                 <ListBox.ItemTemplate>
                   <DataTemplate>
                     <StackPanel Orientation="Horizontal" Spacing="5">

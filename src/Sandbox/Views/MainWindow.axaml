@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Sandbox.ViewModels"
+        xmlns:controls="http://furesoft.de/schemas/wyswyg"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Sandbox.Views.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
@@ -14,5 +15,9 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
 
+    <Grid>
+        <controls:AddWidgetButton Display="{Binding ElementName=display}" VerticalAlignment="Top" HorizontalAlignment="Right" />
+        <controls:WidgetDisplay VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="display" />
+    </Grid>
 
 </Window>
