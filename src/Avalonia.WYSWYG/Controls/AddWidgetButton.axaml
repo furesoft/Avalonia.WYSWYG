@@ -1,0 +1,33 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:controls="http://furesoft.de/schemas/wyswyg">
+  <Style Selector="controls|AddWidgetButton">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <controls:ImagePopupButton Name="PART_Popup" Width="150" Height="45" VerticalAlignment="Top"
+                               HorizontalAlignment="Right"
+                               Kind="AddBox" CommandParameter="{Binding SelectedBlock, Mode=TwoWay}"
+                               Text="Block hinzufügen" IsChecked="{TemplateBinding IsPopupOpen, Mode=TwoWay}">
+
+          <controls:ImagePopupButton.PopupContent>
+            <Border Width="150" Height="150" Background="White">
+              <ListBox Name="PART_Items"
+                       ItemsSource="{Binding Widgets, Source={core:ServiceContainer {x:Type WidgetStorage}}}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                      <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="22" Height="22" />
+
+                      <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Border>
+          </controls:ImagePopupButton.PopupContent>
+        </controls:ImagePopupButton>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+</Styles>

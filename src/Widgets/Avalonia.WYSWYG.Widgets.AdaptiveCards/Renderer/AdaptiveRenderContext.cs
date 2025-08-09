@@ -1,0 +1,508 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using AdaptiveCards;
+using AdaptiveCards.Rendering;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Media;
+using Avalonia.WYSWYG.Widgets.AdaptiveCards.Renderer.Helpers;
+
+namespace Avalonia.WYSWYG.Widgets.AdaptiveCards.Renderer;
+
+/// <summary>
+///     Context state for a render pass
+/// </summary>
+public class AdaptiveRenderContext
+{
+    private readonly Dictionary<string, SolidColorBrush> _colors = new();
+
+    public IDictionary<Button, Control> ActionShowCards = new Dictionary<Button, Control>();
+
+    private bool AncestorHasFallback;
+
+    public IDictionary<string, Func<string>> InputBindings = new Dictionary<string, Func<string>>();
+
+    // Dictionary where we tie every input.Id (string) with the card internal Id 
+    private readonly Dictionary<AdaptiveInternalID, List<string>> InputsInCard = new();
+
+    public Dictionary<string, AdaptiveInputValue> InputValues = new();
+
+    // contains showcard peers in actions set, and the AdaptiveInternalID is internal id of the actions set
+    public IDictionary<AdaptiveInternalID, List<Control>> PeerShowCardsInActionSet =
+        new Dictionary<AdaptiveInternalID, List<Control>>();
+
+    // This dictionary exists for setting the ids to elements without messing with the Name property to avoid crashes with weird ids
+    internal IDictionary<string, Control> RenderedElementsWithId = new Dictionary<string, Control>();
+    private bool RenderingFallback;
+
+    public AdaptiveRenderContext(Action<object, AdaptiveActionEventArgs> actionCallback,
+        Action<object, MissingInputEventArgs> missingDataCallback,
+        Action<object, AdaptiveMediaEventArgs> mediaClickCallback)
+    {
+        if (actionCallback != null)
+            OnAction += (obj, args) => actionCallback(obj, args);
+
+        if (missingDataCallback != null)
+            OnMissingInput += (obj, args) => missingDataCallback(obj, args);
+
+        if (mediaClickCallback != null)
+            OnMediaClick += (obj, args) => mediaClickCallback(obj, args);
+    }
+
+    public AdaptiveHostConfig Config { get; set; } = new();
+
+    public IList<AdaptiveWarning> Warnings { get; } = new List<AdaptiveWarning>();
+
+    public AdaptiveElementRenderers<Control, AdaptiveRenderContext> ElementRenderers { get; set; }
+
+    public AdaptiveActionHandlers ActionHandlers { get; set; }
+
+    public AdaptiveFeatureRegistration FeatureRegistration { get; set; }
+
+    public bool IsRenderingSelectAction { get; set; }
+
+    public bool IsRenderingOverflowAction { get; set; }
+
+    public bool? Rtl { get; set; }
+
+    public string Lang { get; set; }
+
+    public Control CardRoot { get; set; }
+
+    public AdaptiveRenderArgs RenderArgs { get; set; }
+
+    // Dictionary where all the parent cards point to their parent cards, the parent for the main card must have ID = Invalid
+    public Dictionary<AdaptiveInternalID, AdaptiveInternalID> ParentCards { get; set; } = new();
+
+    // Dictionary where we tie every Action.Submit or Action.Exectute to the card where it is contained, this help us knowing where should we start validating from
+    public Dictionary<AdaptiveAction, AdaptiveInternalID> SubmitActionCardId { get; set; } = new();
+
+    public event EventHandler<AdaptiveActionEventArgs> OnAction;
+
+    public event EventHandler<AdaptiveMediaEventArgs> OnMediaClick;
+
+    /// <summary>
+    ///     Event fires when missing input for submit/http actions
+    /// </summary>
+    public event EventHandler<MissingInputEventArgs> OnMissingInput;
+
+    public void InvokeAction(Control ui, AdaptiveActionEventArgs args)
+    {
+        // ToggleVisibility is a renderer-handled action
+        if (args.Action is AdaptiveToggleVisibilityAction toggleVisibilityAction)
+        {
+            ToggleVisibility(toggleVisibilityAction.TargetElements);
+            return;
+        }
+
+        if (args.Action is AdaptiveShowCardAction
+            && Config.Actions.ShowCard.ActionMode == ShowCardActionMode.Inline)
+        {
+            ToggleShowCardVisibility((Button) ui);
+            return;
+        }
+
+        if (args.Action is AdaptiveSubmitAction)
+        {
+            var submitAction = args.Action as AdaptiveSubmitAction;
+
+            if (submitAction.AssociatedInputs == AdaptiveAssociatedInputs.Auto)
+                if (!ValidateInputs(submitAction))
+                    return;
+        }
+        else if (args.Action is AdaptiveExecuteAction)
+        {
+            var executeAction = args.Action as AdaptiveExecuteAction;
+
+            if (executeAction.AssociatedInputs == AdaptiveAssociatedInputs.Auto)
+                if (!ValidateInputs(executeAction))
+                    return;
+        }
+        else if (args.Action is AdaptiveOverflowAction overflowAction)
+        {
+            FlyoutBase.ShowAttachedFlyout(ui);
+            return;
+        }
+
+        OnAction?.Invoke(ui, args);
+    }
+
+    public void MissingInput(AdaptiveAction sender, MissingInputEventArgs args)
+    {
+        OnMissingInput?.Invoke(sender, args);
+    }
+
+    public void ClickMedia(Control ui, AdaptiveMediaEventArgs args)
+    {
+        OnMediaClick?.Invoke(ui, args);
+    }
+
+    public SolidColorBrush GetColorBrush(string color)
+    {
+        lock (_colors)
+        {
+            if (_colors.TryGetValue(color, out var brush))
+                return brush;
+            brush = new(Color.Parse(color));
+            _colors[color] = brush;
+            return brush;
+        }
+    }
+
+    public AdaptiveTypedElement GetRendereableElement(AdaptiveTypedElement element)
+    {
+        AdaptiveTypedElement rendereableElement = null;
+        var oldAncestorHasFallback = AncestorHasFallback;
+        var elementHasFallback = element != null && element.Fallback != null &&
+                                 element.Fallback.Type != AdaptiveFallbackElement.AdaptiveFallbackType.None;
+        AncestorHasFallback = AncestorHasFallback || elementHasFallback;
+
+        try
+        {
+            if (AncestorHasFallback && !element.MeetsRequirements(FeatureRegistration))
+                throw new AdaptiveFallbackException("Element requirements aren't met");
+
+            var renderer = ElementRenderers.Get(element.GetType());
+            if (renderer != null) rendereableElement = element;
+        }
+        catch (AdaptiveFallbackException)
+        {
+            if (!elementHasFallback) throw;
+        }
+
+        if (rendereableElement == null)
+        {
+            // Since no renderer exists for this element, add warning and render fallback (if available)
+            if (element.Fallback != null && element.Fallback.Type != AdaptiveFallbackElement.AdaptiveFallbackType.None)
+            {
+                if (element.Fallback.Type == AdaptiveFallbackElement.AdaptiveFallbackType.Drop)
+                {
+                    Warnings.Add(new(-1, $"Dropping element '{element.Type}' for fallback"));
+                }
+                else if (element.Fallback.Type == AdaptiveFallbackElement.AdaptiveFallbackType.Content &&
+                         element.Fallback.Content != null)
+                {
+                    // Render fallback content
+                    Warnings.Add(new(-1,
+                        $"Performing fallback for '{element.Type}' (fallback element type '{element.Fallback.Content.Type}')"));
+                    RenderingFallback = true;
+
+                    rendereableElement = GetRendereableElement(element.Fallback.Content);
+
+                    RenderingFallback = false;
+                }
+            }
+            else if (AncestorHasFallback && !RenderingFallback)
+            {
+                throw new AdaptiveFallbackException();
+            }
+            else
+            {
+                Warnings.Add(new(-1, $"No renderer for element '{element.Type}'"));
+            }
+        }
+
+        AncestorHasFallback = oldAncestorHasFallback;
+
+        return rendereableElement;
+    }
+
+    /// <summary>
+    ///     Helper to deal with casting
+    /// </summary>
+    public Control Render(AdaptiveTypedElement element)
+    {
+        Control frameworkElementOut = null;
+        var oldAncestorHasFallback = AncestorHasFallback;
+        var elementHasFallback = element != null && element.Fallback != null &&
+                                 element.Fallback.Type != AdaptiveFallbackElement.AdaptiveFallbackType.None;
+        AncestorHasFallback = AncestorHasFallback || elementHasFallback;
+
+        try
+        {
+            if (AncestorHasFallback && !element.MeetsRequirements(FeatureRegistration))
+                throw new AdaptiveFallbackException("Element requirements aren't met");
+
+            // Inputs should render read-only if interactivity is false
+            if (!Config.SupportsInteractivity && element is AdaptiveInput input)
+            {
+                var tb = AdaptiveTypedElementConverter.CreateElement<AdaptiveTextBlock>();
+                tb.Text = input.GetNonInteractiveValue() ?? "*[Input]*";
+                tb.Color = AdaptiveTextColor.Accent;
+                tb.Wrap = true;
+                InputValues.Add(input.Id, null);
+                Warnings.Add(new(-1, $"Rendering non-interactive input element '{element.Type}'"));
+                frameworkElementOut = Render(tb);
+            }
+
+            if (frameworkElementOut == null)
+            {
+                var renderer = ElementRenderers.Get(element.GetType());
+                if (renderer != null)
+                {
+                    var rendered = renderer.Invoke(element, this);
+
+                    if (!string.IsNullOrEmpty(element.Id))
+                        // The element is added to the dictionary if it's an action or  if it's a card element and the height is auto
+                        // as stretch items are enclosed in a panel that is added in AdaptiveContainerRenderer.AddContainerElements 
+                        if (!(element is AdaptiveElement) ||
+                            (element is AdaptiveElement adaptiveElement &&
+                             adaptiveElement.Height == AdaptiveHeight.Auto))
+                            RenderedElementsWithId.Add(element.Id, rendered);
+
+                    frameworkElementOut = rendered;
+                }
+            }
+
+            if (frameworkElementOut != null)
+                frameworkElementOut.Classes.Add(element.GetType().Name);
+        }
+        catch (AdaptiveFallbackException)
+        {
+            if (!elementHasFallback) throw;
+        }
+
+        // If a container failed to render any of the children elements perform fallback
+        if (frameworkElementOut == null && element is AdaptiveCollectionElement)
+        {
+            if (element.Fallback != null && element.Fallback.Type != AdaptiveFallbackElement.AdaptiveFallbackType.None)
+            {
+                if (element.Fallback.Type == AdaptiveFallbackElement.AdaptiveFallbackType.Drop)
+                {
+                    Warnings.Add(new(-1, $"Dropping element '{element.Type}' for fallback"));
+                }
+                else if (element.Fallback.Type == AdaptiveFallbackElement.AdaptiveFallbackType.Content &&
+                         element.Fallback.Content != null)
+                {
+                    // Render fallback content
+                    Warnings.Add(new(-1,
+                        $"Performing fallback for '{element.Type}' (fallback element type '{element.Fallback.Content.Type}')"));
+                    RenderingFallback = true;
+                    frameworkElementOut = Render(element.Fallback.Content);
+                    RenderingFallback = false;
+                }
+            }
+            else if (AncestorHasFallback && !RenderingFallback)
+            {
+                throw new AdaptiveFallbackException();
+            }
+            else
+            {
+                Warnings.Add(new(-1, $"No renderer for element '{element.Type}'"));
+            }
+        }
+
+        AncestorHasFallback = oldAncestorHasFallback;
+        return frameworkElementOut;
+    }
+
+    public FontColorConfig GetForegroundColors(AdaptiveTextColor textColor)
+    {
+        switch (textColor)
+        {
+            case AdaptiveTextColor.Accent:
+                return RenderArgs.ForegroundColors.Accent;
+            case AdaptiveTextColor.Attention:
+                return RenderArgs.ForegroundColors.Attention;
+            case AdaptiveTextColor.Dark:
+                return RenderArgs.ForegroundColors.Dark;
+            case AdaptiveTextColor.Good:
+                return RenderArgs.ForegroundColors.Good;
+            case AdaptiveTextColor.Light:
+                return RenderArgs.ForegroundColors.Light;
+            case AdaptiveTextColor.Warning:
+                return RenderArgs.ForegroundColors.Warning;
+            case AdaptiveTextColor.Default:
+            default:
+                return RenderArgs.ForegroundColors.Default;
+        }
+    }
+
+    /// <summary>
+    ///     Casts framework element to a TagContent element
+    /// </summary>
+    /// <param name="element">Rendered element that contains tag</param>
+    /// <returns>Casted tag content</returns>
+    private TagContent GetTagContent(Control element)
+    {
+        if (element != null && element.Tag != null && element.Tag is TagContent tagContent) return tagContent;
+        return null;
+    }
+
+    /// <summary>
+    ///     Changes the visibility of the specified elements as defined
+    /// </summary>
+    /// <param name="targetElements">Taget elements to change visibility</param>
+    public void ToggleVisibility(IEnumerable<AdaptiveTargetElement> targetElements)
+    {
+        var elementContainers = new HashSet<Grid>();
+
+        foreach (var targetElement in targetElements)
+        {
+            Control element = null;
+
+            if (RenderedElementsWithId.TryGetValue(targetElement.ElementId, out element))
+            {
+                if (element != null && element is Control elementControl)
+                {
+                    var isCurrentlyVisible = elementControl.IsVisible;
+
+                    // if we read something with the format {"elementId": <id>", "isVisible": true} or
+                    // we just read the id and the element is not visible;
+                    // otherwise if we read something with the format {"elementId": <id>", "isVisible": false} or
+                    // we just read the id and the element is visible
+                    var newVisibility = (targetElement.IsVisible.HasValue && targetElement.IsVisible.Value) ||
+                                        (!targetElement.IsVisible.HasValue && !isCurrentlyVisible);
+
+                    var tagContent = GetTagContent(elementControl);
+
+                    RendererUtil.SetVisibility(elementControl, newVisibility, tagContent);
+
+                    if (tagContent != null) elementContainers.Add(tagContent.ParentContainerElement);
+                }
+            }
+            else
+            {
+                Warnings.Add(new(-1,
+                    $"Toggling visibility failed to find target element Id = '{targetElement.ElementId}'"));
+            }
+        }
+
+        foreach (var elementContainer in elementContainers) ResetSeparatorVisibilityInsideContainer(elementContainer);
+    }
+
+    /// <summary>
+    ///     Gets the actual rendered element as elements with 'stretch' height are contained inside a StackPanel
+    /// </summary>
+    /// <param name="element">Element or StackPanel that contains rendered element</param>
+    /// <returns>Actual rendered element</returns>
+    private Control GetRenderedElement(Control element)
+    {
+        if (element is StackPanel containerPanel)
+        {
+            var uiElement = containerPanel.Children[0];
+
+            if (uiElement is Control frameworkElement) return frameworkElement;
+        }
+
+        return element;
+    }
+
+    private void HandleSeparatorAndSpacing(bool isFirstVisible, Control element, TagContent tagContent)
+    {
+        // Hide the spacing / separator for the first element
+        // Separators and spacings are added as a grid
+        var separator = tagContent.Separator;
+
+        if (separator != null) separator.IsVisible = !isFirstVisible;
+    }
+
+    /// <summary>
+    ///     Hides the first separator and fixes the visibility for the other visible separators
+    /// </summary>
+    /// <param name="uiContainer">Renderered element container</param>
+    public void ResetSeparatorVisibilityInsideContainer(Grid uiContainer)
+    {
+        var isFirstVisible = true;
+        foreach (var element in uiContainer.Children)
+            if (element.IsVisible)
+            {
+                var tagContent = GetTagContent(element);
+
+                if (tagContent != null)
+                {
+                    HandleSeparatorAndSpacing(isFirstVisible, element, tagContent);
+                    isFirstVisible = false;
+                }
+            }
+    }
+
+    public void ToggleShowCardVisibility(Button uiAction)
+    {
+        var card = ActionShowCards[uiAction];
+        var id = uiAction.GetContext() as AdaptiveInternalID;
+        if (id == null)
+        {
+            Warnings.Add(new(-1, $"Toggling visibility event handling is dropped " +
+                                 $"since the action set the button belongs to has null internal id"));
+            return;
+        }
+
+        var peers = PeerShowCardsInActionSet[id];
+        if (card != null && peers != null)
+        {
+            var targetVisibility = !card.IsVisible;
+            // need to make sure we collapse all showcards before showing this one
+            foreach (var showCard in peers) showCard.IsVisible = false;
+
+            card.IsVisible = targetVisibility;
+        }
+    }
+
+    private bool ValidateInputs(AdaptiveAction submitAction)
+    {
+        bool allInputsValid = true, firstInvalidInputFound = false;
+        var newInputBindings = new Dictionary<string, Func<string>>();
+
+        // We clear the InputBindings collection to clear all the results
+        InputBindings.Clear();
+
+        var inputsToValidate = RetrieveInputList(submitAction);
+
+        // Iterate through all the elements and validate them
+        foreach (var inputId in inputsToValidate)
+        {
+            var inputValue = InputValues[inputId];
+            var inputIsValid = inputValue.Validate();
+            allInputsValid = allInputsValid && inputIsValid;
+
+            // If the validation failed, set focus to the first element that failed
+            if (!allInputsValid && !firstInvalidInputFound)
+            {
+                inputValue.SetFocus();
+                firstInvalidInputFound = true;
+            }
+
+            inputValue.ChangeVisualCueVisibility(inputIsValid);
+
+            // Add the input value to the inputs bindings
+            newInputBindings.Add(inputId, () => inputValue.GetValue());
+        }
+
+        // If the validation succeeded, then copy the result to the InputBindings
+        if (allInputsValid)
+            foreach (var key in newInputBindings.Keys)
+                InputBindings.Add(key, newInputBindings[key]);
+
+        return allInputsValid;
+    }
+
+    private List<string> RetrieveInputList(AdaptiveAction submitAction)
+    {
+        var inputList = new List<string>();
+        var submitActionCardId = SubmitActionCardId[submitAction];
+
+        // While the card is not the main card, iterate through them
+        // It's important to note that as we go from deep most upwards then we have to add the
+        // inputs at the begining of the list to focus on the first one on validation
+        while (!submitActionCardId.Equals(new AdaptiveInternalID()))
+        {
+            // Copy the inputs into the result
+            if (InputsInCard.ContainsKey(submitActionCardId))
+                inputList.InsertRange(0, InputsInCard[submitActionCardId]);
+
+            // Move to the parent card
+            submitActionCardId = ParentCards[submitActionCardId];
+        }
+
+        return inputList;
+    }
+
+    public void AddInputToCard(AdaptiveInternalID cardId, string inputId)
+    {
+        if (!InputsInCard.ContainsKey(cardId)) InputsInCard.Add(cardId, new());
+
+        InputsInCard[cardId].Add(inputId);
+    }
+}

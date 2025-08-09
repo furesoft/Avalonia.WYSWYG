@@ -1,0 +1,89 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:wyswyg="clr-namespace:Avalonia.WYSWYG"
+        xmlns:controls="http://furesoft.de/schemas/wyswyg">
+  <Style Selector="controls|EditableContainer[IsEditMode=True] /template/ Grid#Default">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="controls|EditableContainer[IsEditMode=False] /template/ Grid#Default">
+    <Setter Property="IsVisible" Value="True" />
+  </Style>
+
+  <Style Selector="controls|EditableContainer[IsEditMode=True] /template/ StackPanel#Edit">
+    <Setter Property="IsVisible" Value="True" />
+  </Style>
+
+  <Style Selector="controls|EditableContainer[IsEditMode=False] /template/ StackPanel#Edit">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="controls|EditableContainer">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid>
+          <Grid Name="Default">
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" ZIndex="100"
+                        Spacing="5" Orientation="Horizontal"
+                        IsVisible="{Binding $parent[controls:EditableContainer].IsPointerOver}">
+              <Button Command="{TemplateBinding ToggleEditModeCommand}">
+                <avalonia:MaterialIcon Kind="Edit" />
+              </Button>
+
+              <Button Margin="1" VerticalAlignment="Center"
+                      Command="{TemplateBinding DeleteCommand, Mode=TwoWay}"
+                      CommandParameter="{TemplateBinding CommandParameter, Mode=TwoWay}" ToolTip.Tip="Entfernen"
+                      HorizontalAlignment="Right" IsVisible="{TemplateBinding IsDeleteable, Mode=TwoWay}">
+                <avalonia:MaterialIcon Kind="Delete" Width="30" Height="30" />
+              </Button>
+            </StackPanel>
+
+            <ContentPresenter Content="{TemplateBinding Content, Mode=TwoWay}" IsVisible="True"
+                              ContentTemplate="{Binding Template}" />
+          </Grid>
+
+          <StackPanel Spacing="15" Name="Edit">
+            <Grid Name="before" DragDrop.AllowDrop="True" Margin="15">
+              <TextBlock Text="drop here" />
+            </Grid>
+
+            <Grid ColumnDefinitions="35,15, *, 47" Margin="2">
+              <Panel Grid.Column="0" Name="dragBtn" Width="50" Background="{DynamicResource md.sys.color.on-primary}">
+                <avalonia:MaterialIcon Kind="Drag" VerticalAlignment="Center" HorizontalAlignment="Center" />
+              </Panel>
+
+              <ContentPresenter Grid.Column="2" VerticalAlignment="Center"
+                                Content="{TemplateBinding Content, Mode=TwoWay}"
+                                IsVisible="True">
+                <ContentPresenter.DataTemplates>
+                  <wyswyg:ModelEditTemplateSelector />
+                </ContentPresenter.DataTemplates>
+              </ContentPresenter>
+
+              <StackPanel Grid.Column="3" Margin="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Button Margin="1"
+                        Command="{TemplateBinding DeleteCommand, Mode=TwoWay}"
+                        CommandParameter="{TemplateBinding CommandParameter, Mode=TwoWay}" ToolTip.Tip="Entfernen"
+                        IsVisible="{TemplateBinding IsDeleteable, Mode=TwoWay}">
+                  <avalonia:MaterialIcon Kind="Delete" Width="30" Height="30" />
+                </Button>
+
+                <Button Margin="1"
+                        Command="{TemplateBinding ApplyCommand, Mode=TwoWay}"
+                        CommandParameter="{TemplateBinding CommandParameter, Mode=TwoWay}" ToolTip.Tip="Übernehmen">
+
+                  <avalonia:MaterialIcon Kind="Done" Width="30" Height="30" />
+                </Button>
+              </StackPanel>
+            </Grid>
+
+            <Grid Name="after" DragDrop.AllowDrop="True" Margin="15">
+              <TextBlock Text="drop here" />
+            </Grid>
+          </StackPanel>
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+</Styles>

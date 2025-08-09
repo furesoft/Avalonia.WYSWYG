@@ -1,0 +1,29 @@
+﻿using Avalonia.WYSWYG.Widgets.ProcessChain.Graph.Editor.Controls;
+
+namespace Avalonia.WYSWYG.Widgets.ProcessChain.Graph.Designer.Views;
+
+public partial class MenuView : UserControl
+{
+    public static readonly StyledProperty<NodeZoomBorder> ZoomControlProperty =
+        AvaloniaProperty.Register<MenuView, NodeZoomBorder>(nameof(ZoomControl));
+
+    public static readonly StyledProperty<DrawingNode> DrawingNodeProperty =
+        AvaloniaProperty.Register<MenuView, DrawingNode>(nameof(DrawingNode));
+
+    public MenuView()
+    {
+        InitializeComponent();
+    }
+
+    public NodeZoomBorder ZoomControl
+    {
+        get => GetValue(ZoomControlProperty);
+        set => SetValue(ZoomControlProperty, value);
+    }
+
+    public DrawingNode DrawingNode
+    {
+        get => GetValue(DrawingNodeProperty);
+        set => SetValue(DrawingNodeProperty, value);
+    }
+}

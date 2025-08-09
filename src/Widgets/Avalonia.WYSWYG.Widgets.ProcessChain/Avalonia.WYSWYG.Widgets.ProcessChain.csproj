@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Avalonia" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.3.0" />
+      <PackageReference Include="Avalonia.Diagnostics" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Skia" Version="11.3.3" />
+      <PackageReference Include="Avalonia.Xaml.Interactions.DragAndDrop" Version="11.3.0.6" />
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+      <PackageReference Include="ReactiveMarbles.PropertyChanged" Version="2.0.27" />
+      <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Avalonia.WYSWYG\Avalonia.WYSWYG.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Graph\Designer\Default.axaml" />
+      <UpToDateCheckInput Remove="Graph\Designer\Styles\Icons.axaml" />
+      <UpToDateCheckInput Remove="Graph\Designer\Styles\Nodes.axaml" />
+      <UpToDateCheckInput Remove="Graph\Designer\Styles\Themes.axaml" />
+      <UpToDateCheckInput Remove="Graph\Designer\Views\MainWindow.axaml" />
+      <UpToDateCheckInput Remove="Graph\Designer\Views\MenuView.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Connector.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Connectors.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\DrawingNode.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\DrawingNodeProperties.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Editor.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Node.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Nodes.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Pin.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Pins.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\Controls\Toolbox.axaml" />
+      <UpToDateCheckInput Remove="Graph\Editor\Themes\NodeEditorTheme.axaml" />
+      <UpToDateCheckInput Remove="Graph\NodeViews\CommentView.axaml" />
+      <UpToDateCheckInput Remove="Graph\NodeViews\ConditionView.axaml" />
+      <UpToDateCheckInput Remove="Graph\NodeViews\DefaultNodeView.axaml" />
+      <UpToDateCheckInput Remove="Graph\NodeViews\EntryView.axaml" />
+      <UpToDateCheckInput Remove="Graph\NodeViews\IconNodeView.axaml" />
+      <UpToDateCheckInput Remove="Graph\NodeViews\SubgraphView.axaml" />
+    </ItemGroup>
+
+</Project>

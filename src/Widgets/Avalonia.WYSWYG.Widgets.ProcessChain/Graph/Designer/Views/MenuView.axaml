@@ -1,0 +1,57 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels1="clr-namespace:Furesoft.LowCode.Designer.ViewModels"
+             xmlns:viewModels="clr-namespace:Avalonia.WYSWYG.Widgets.ProcessChain.Graph.Designer.ViewModels"
+             Name="MenuUserControl"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="Avalonia.WYSWYG.Widgets.ProcessChain.Graph.Designer.Views.MenuView"
+             x:CompileBindings="False" x:DataType="viewModels:MainViewViewModel">
+
+  <Design.DataContext>
+    <viewModels:MainViewViewModel />
+  </Design.DataContext>
+
+  <DockPanel VerticalAlignment="Top">
+    <Menu>
+      <MenuItem Header="_File">
+        <MenuItem Header="_New"
+                  Command="{Binding NewCommand}"
+                  InputGesture="{OnPlatform macOS=CMD+N, iOS=CMD+N, Default=Ctrl+N}">
+          <MenuItem.Icon>
+            <PathIcon Width="16" Height="16" Data="{DynamicResource NewIcon}" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="_Open..."
+                  Command="{Binding OpenCommand}"
+                  InputGesture="{OnPlatform macOS=CMD+O, iOS=CMD+O, Default=Ctrl+O}">
+          <MenuItem.Icon>
+            <PathIcon Width="16" Height="16" Data="{DynamicResource OpenIcon}" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="_Save..."
+                  Command="{Binding SaveCommand}"
+                  InputGesture="{OnPlatform macOS=CMD+S, iOS=CMD+S, Default=Ctrl+S}">
+          <MenuItem.Icon>
+            <PathIcon Width="16" Height="16" Data="{DynamicResource SaveIcon}" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Export..."
+                  Command="{Binding ExportCommand}" />
+        <Separator />
+        <MenuItem Header="E_xit"
+                  Command="{Binding ExitCommand}" />
+      </MenuItem>
+
+      <MenuItem Header="Run" Command="{Binding EvaluateCommand}" />
+      <MenuItem Header="Debug" Command="{Binding DebugCommand}" />
+      <MenuItem Header="Analyze" Command="{Binding AnalyzeCommand}" />
+    </Menu>
+
+  </DockPanel>
+
+</UserControl>

@@ -1,0 +1,39 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Avalonia.WYSWYG.Widgets.ProcessChain.Graph.Editor.Controls"
+             xmlns:converters="clr-namespace:Avalonia.WYSWYG.Widgets.ProcessChain.Graph.Designer.Converters"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100" Height="60" Width="60"
+             x:Class="Avalonia.WYSWYG.Widgets.ProcessChain.Graph.NodeViews.IconNodeView">
+  <Grid>
+    <Ellipse Classes="node" />
+
+    <Viewbox Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Path Classes="node" Data="{Binding $parent[UserControl].Tag}" />
+    </Viewbox>
+
+    <ProgressBar Value="{Binding Progress.Progress, Mode=TwoWay}" Width="{Binding $parent[controls:Node].Width}"
+                 Height="{Binding $parent[controls:Node].Height}" HorizontalAlignment="Center"
+                 VerticalAlignment="Center">
+      <ProgressBar.Template>
+        <ControlTemplate>
+          <Grid>
+            <Border Name="PART_Indicator" />
+
+            <Arc Stroke="Green" StrokeThickness="2"
+                 StartAngle="-90" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+              <Arc.SweepAngle>
+                <MultiBinding Converter="{converters:RangeToSweepConverter}">
+                  <Binding RelativeSource="{RelativeSource AncestorType=ProgressBar}" Path="Value" />
+                  <Binding RelativeSource="{RelativeSource AncestorType=ProgressBar}" Path="Minimum" />
+                  <Binding RelativeSource="{RelativeSource AncestorType=ProgressBar}" Path="Maximum" />
+                </MultiBinding>
+              </Arc.SweepAngle>
+            </Arc>
+          </Grid>
+        </ControlTemplate>
+      </ProgressBar.Template>
+    </ProgressBar>
+  </Grid>
+</UserControl>

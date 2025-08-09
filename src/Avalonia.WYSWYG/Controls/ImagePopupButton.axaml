@@ -1,0 +1,39 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:core="http://furesoft.de/schemas/wyswyg">
+  <Style Selector="core|ImagePopupButton">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Name="PopupBorder" Background="{TemplateBinding Background}" Margin="2">
+          <Grid VerticalAlignment="Center" Margin="0,0,0,5">
+            <Button Name="p"
+                    ToolTip.Tip="{TemplateBinding Text, Mode=TwoWay}" HorizontalAlignment="Right"
+                    Command="{Binding $parent[core:ImagePopupButton].OpenPopupCommand}">
+              <avalonia:MaterialIcon Kind="{TemplateBinding Kind}" Width="22" Height="22" />
+            </Button>
+
+            <Popup
+              WindowManagerAddShadowHint="False"
+              IsOpen="{TemplateBinding IsChecked, Mode=TwoWay}" PlacementGravity="BottomLeft"
+              PlacementTarget="PopupBorder"
+              IsLightDismissEnabled="True">
+              <Border Background="{DynamicResource ComboBoxDropDownBackground}"
+                      BorderThickness="1" BorderBrush="Black"
+
+                      Padding="{DynamicResource ComboBoxDropdownBorderPadding}"
+                      HorizontalAlignment="Stretch"
+                      CornerRadius="{DynamicResource OverlayCornerRadius}">
+                <ContentPresenter Content="{TemplateBinding PopupContent}" />
+              </Border>
+            </Popup>
+          </Grid>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="core|ImagePopupButton:pointerover">
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+</Styles>
