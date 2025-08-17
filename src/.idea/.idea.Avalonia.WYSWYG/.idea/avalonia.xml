@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Avalonia.WYSWYG/Controls/AddWidgetButton.axaml" value="Sandbox/Sandbox.csproj" />
+        <entry key="Avalonia.WYSWYG/Controls/WidgetDisplay.axaml" value="Sandbox/Sandbox.csproj" />
         <entry key="Avalonia.WYSWYG/Controls/WidgetSearch.axaml" value="Sandbox/Sandbox.csproj" />
         <entry key="Avalonia.WYSWYG/Default.axaml" value="Sandbox/Sandbox.csproj" />
         <entry key="Sandbox/App.axaml" value="Sandbox/Sandbox.csproj" />

@@ -10,7 +10,7 @@
     <Style Selector="controls|WidgetSearch">
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid>
+                <Grid x:Name="PART_container">
                     <AutoCompleteBox FilterMode="Custom" x:Name="PART_box" ItemsSource="{Binding Widgets, Source={wyswyg:ServiceContainer {x:Type wyswyg:WidgetStorage}}}">
                         <AutoCompleteBox.ItemTemplate>
                             <DataTemplate>
@@ -22,6 +22,19 @@
                             </DataTemplate>
                         </AutoCompleteBox.ItemTemplate>
                     </AutoCompleteBox>
+
+                    <Grid.DataTemplates>
+                        <DataTemplate DataType="wyswyg:WidgetModel">
+                            <controls:EditableContainer Content="{Binding}"
+                                                        CommandParameter="{Binding}"
+                                                        IsEditMode="true">
+                                                        <!--DeleteCommand="{Binding $parent[controls:WidgetDisplay].DeleteCommand}"-->
+                                    <controls:EditableContainer.EditModeContent>
+                                        <ContentPresenter Content="{Binding EditView, Mode=TwoWay}" />
+                                    </controls:EditableContainer.EditModeContent>
+                                </controls:EditableContainer>
+                            </DataTemplate>
+                    </Grid.DataTemplates>
                 </Grid>
             </ControlTemplate>
         </Setter>

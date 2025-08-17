@@ -1,3 +1,4 @@
+using Avalonia.WYSWYG.Parsing;
 using Avalonia.WYSWYG.WidgetTemplates.Link;
 using Avalonia.WYSWYG.WidgetTemplates.StackLayout;
 using Material.Icons;
@@ -23,6 +24,20 @@ public class WidgetStorage
             Extractor = model.Extractor,
             Properties = model.Properties,
         };
+    }
+
+    public WidgetModel Instanciate(Block block)
+    {
+        var model = Widgets.First(model => model.Command == block.Name);
+
+        var instance = Instanciate(model.ID);
+
+        foreach (var prop in block.Properties)
+        {
+            instance.Properties[prop.Key] = prop.Value;
+        }
+
+        return instance;
     }
 
     public WidgetModel? FindByName(string name)

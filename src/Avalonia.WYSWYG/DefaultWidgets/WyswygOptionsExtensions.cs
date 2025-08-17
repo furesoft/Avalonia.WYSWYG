@@ -13,7 +13,12 @@ public static class WyswygOptionsExtensions
             DisplayName = "Link",
             IconKind = MaterialIconKind.Link,
             Template = new LinkTemplate(),
-            EditViewTemplate = new LinkEditTemplate()
+            EditViewTemplate = new LinkEditTemplate(),
+            Properties =
+            {
+                ["URL"] = "",
+                ["Label"] = "Link",
+            }
         });
         options.AddWidget(new()
         {

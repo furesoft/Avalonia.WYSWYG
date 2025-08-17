@@ -6,7 +6,7 @@ namespace Avalonia.WYSWYG.Parsing;
 public partial class Block
 {
     public string Name { get; set; }
-    public Dictionary<string, string> Properties { get; set; }
+    public Dictionary<string, string> Properties { get; set; } = new();
 
     public static Block Parse(string input)
     {
