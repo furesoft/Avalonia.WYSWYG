@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using Avalonia.Metadata;
+using Avalonia.WYSWYG.Parsing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Material.Icons;
 
@@ -15,6 +16,7 @@ public sealed partial class WidgetModel : ObservableObject
     [ObservableProperty] private bool _isEditMode;
     [ObservableProperty] private string _name;
     [ObservableProperty] private string _category;
+    public IMetaExtractor? Extractor { get; set; }
 
     public WidgetModel()
     {

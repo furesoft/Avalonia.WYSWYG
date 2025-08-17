@@ -1,4 +1,5 @@
-﻿using Splat;
+﻿using Avalonia.WYSWYG.Parsing;
+using Splat;
 
 namespace Avalonia.WYSWYG;
 
@@ -12,6 +13,7 @@ public static class AppBuilderExtensions
             configureOptions(options);
             Locator.CurrentMutable.RegisterConstant(options);
             Locator.CurrentMutable.RegisterConstant(options.WidgetStorage);
+            Locator.CurrentMutable.RegisterConstant(new PropertiesMetaExtractor());
         });
 
         return builder;

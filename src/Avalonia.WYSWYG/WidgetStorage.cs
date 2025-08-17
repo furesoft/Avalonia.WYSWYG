@@ -37,7 +37,14 @@ public class WidgetStorage
             ID = model.ID,
             IconKind = model.IconKind,
             Name = model.Name,
-            OnAddCommand = model.OnAddCommand
+            OnAddCommand = model.OnAddCommand,
+            Extractor = model.Extractor,
+            Properties = model.Properties,
         };
+    }
+
+    public WidgetModel? FindByName(string name)
+    {
+        return Widgets.FirstOrDefault(model => model.Name == name);
     }
 }
