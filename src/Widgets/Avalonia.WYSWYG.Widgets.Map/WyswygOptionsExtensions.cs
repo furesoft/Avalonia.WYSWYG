@@ -8,7 +8,7 @@ public static class WyswygOptionsExtensions
     {
         options.AddWidget(new()
         {
-            Name = "Map",
+            DisplayName = "Map",
             IconKind = MaterialIconKind.Map,
             Template = new MapTemplate(),
             EditViewTemplate = new MapEditTemplate()

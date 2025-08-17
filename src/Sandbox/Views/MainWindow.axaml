@@ -16,6 +16,7 @@
     </Window.DataContext>
 
     <Grid>
+        <controls:WidgetSearch />
         <controls:AddWidgetButton Display="{Binding ElementName=display}" VerticalAlignment="Top" HorizontalAlignment="Right" />
         <controls:WidgetDisplay VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="display" />
     </Grid>

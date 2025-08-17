@@ -14,8 +14,9 @@ public sealed partial class WidgetModel : ObservableObject
 {
     [ObservableProperty] private MaterialIconKind _iconKind;
     [ObservableProperty] private bool _isEditMode;
-    [ObservableProperty] private string _name;
+    [ObservableProperty] private string _displayName;
     [ObservableProperty] private string _category;
+    [ObservableProperty] private string? _command;
     public IMetaExtractor? Extractor { get; set; }
 
     public WidgetModel()
@@ -48,5 +49,10 @@ public sealed partial class WidgetModel : ObservableObject
         {
             Properties[name] = value;
         }
+    }
+
+    public override string ToString()
+    {
+        return _command;
     }
 }

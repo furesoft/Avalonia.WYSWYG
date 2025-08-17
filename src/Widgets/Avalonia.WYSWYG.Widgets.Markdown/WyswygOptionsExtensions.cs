@@ -8,7 +8,7 @@ public static class WyswygOptionsExtensions
     {
         options.AddWidget(new()
         {
-            Name = "Markdown",
+            DisplayName = "Markdown",
             IconKind = MaterialIconKind.LanguageMarkdown,
             Template = new MarkdownTemplate(),
             EditViewTemplate = new MarkdownEditTemplate()

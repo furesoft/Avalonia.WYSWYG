@@ -1,0 +1,29 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Avalonia.WYSWYG.Controls"
+        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:wyswyg="http://furesoft.de/schemas/wyswyg">
+    <Design.PreviewWith>
+        <controls:WidgetSearch />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|WidgetSearch">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <AutoCompleteBox FilterMode="Custom" x:Name="PART_box" ItemsSource="{Binding Widgets, Source={wyswyg:ServiceContainer {x:Type wyswyg:WidgetStorage}}}">
+                        <AutoCompleteBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <avalonia:MaterialIcon Kind="{Binding IconKind}" Width="22" Height="22" />
+
+                                    <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </AutoCompleteBox.ItemTemplate>
+                    </AutoCompleteBox>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

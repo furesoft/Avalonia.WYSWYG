@@ -5,8 +5,9 @@
     <StyleInclude Source="Controls/EditableContainer.axaml" />
     <StyleInclude Source="Controls/WidgetDisplay.axaml" />
     <StyleInclude Source="Controls/ImagePopupButton.axaml" />
+    <StyleInclude Source="Controls/WidgetSearch.axaml" />
 
-    <StyleInclude Source="WidgetTemplates/Link/LinkStyle.axaml" />
+    <StyleInclude Source="DefaultWidgets/Link/LinkStyle.axaml" />
 
     <avalonia:MaterialIconStyles />
 </Styles>

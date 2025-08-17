@@ -2,6 +2,7 @@
 using Avalonia.ReactiveUI;
 using System;
 using Avalonia.WYSWYG;
+using Avalonia.WYSWYG.DefaultWidgets;
 using Avalonia.WYSWYG.Widgets.AdaptiveCards;
 using Avalonia.WYSWYG.Widgets.Map;
 using Avalonia.WYSWYG.Widgets.Markdown;
@@ -25,6 +26,7 @@ sealed class Program
             .LogToTrace()
             .WithWyswyg(options =>
             {
+                options.AddDefaults();
                 options.AddAdaptiveCard();
                 options.AddMap();
                 options.AddMarkdown();

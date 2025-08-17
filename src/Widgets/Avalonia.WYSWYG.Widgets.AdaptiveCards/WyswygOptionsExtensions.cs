@@ -8,7 +8,7 @@ public static class WyswygOptionsExtensions
     {
         options.AddWidget(new()
         {
-            Name = "Card",
+            DisplayName = "Card",
             IconKind = MaterialIconKind.Toll,
             Template = new AdaptiveCardTemplate(),
             EditViewTemplate = new AdaptiveCardEditTemplate()

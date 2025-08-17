@@ -6,24 +6,6 @@ namespace Avalonia.WYSWYG;
 
 public class WidgetStorage
 {
-    public WidgetStorage()
-    {
-        Widgets.Add(new()
-        {
-            Name = "Link",
-            IconKind = MaterialIconKind.Link,
-            Template = new LinkTemplate(),
-            EditViewTemplate = new LinkEditTemplate()
-        });
-        Widgets.Add(new()
-        {
-            Name = "StackLayout",
-            IconKind = MaterialIconKind.ListBox,
-            Template = new StackLayoutTemplate(),
-            EditViewTemplate = new StackLayoutEditTemplate()
-        });
-    }
-
     public List<WidgetModel> Widgets { get; } = [];
 
     public WidgetModel Instanciate(Guid id)
@@ -36,7 +18,7 @@ public class WidgetStorage
             EditViewTemplate = model.EditViewTemplate,
             ID = model.ID,
             IconKind = model.IconKind,
-            Name = model.Name,
+            DisplayName = model.DisplayName,
             OnAddCommand = model.OnAddCommand,
             Extractor = model.Extractor,
             Properties = model.Properties,
@@ -45,6 +27,6 @@ public class WidgetStorage
 
     public WidgetModel? FindByName(string name)
     {
-        return Widgets.FirstOrDefault(model => model.Name == name);
+        return Widgets.FirstOrDefault(model => model.DisplayName == name);
     }
 }
