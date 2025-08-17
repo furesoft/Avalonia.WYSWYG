@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.WYSWYG;
+using Splat;
 
 namespace Sandbox.Views;
 

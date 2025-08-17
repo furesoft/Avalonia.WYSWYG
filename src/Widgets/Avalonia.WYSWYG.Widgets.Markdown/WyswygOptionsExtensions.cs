@@ -2,11 +2,11 @@
 
 namespace Avalonia.WYSWYG.Widgets.Markdown;
 
-public static class MarkdownWidget
+public static class WyswygOptionsExtensions
 {
-    public static void Init(WidgetStorage storage)
+    public static void AddMarkdown(this WyswygOptions options)
     {
-        storage.Widgets.Add(new()
+        options.AddWidget(new()
         {
             Name = "Markdown",
             IconKind = MaterialIconKind.LanguageMarkdown,

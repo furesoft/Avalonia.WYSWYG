@@ -2,11 +2,11 @@
 
 namespace Avalonia.WYSWYG.Widgets.Map;
 
-public static class MapWidget
+public static class WyswygOptionsExtensions
 {
-    public static void Init(WidgetStorage storage)
+    public static void AddMap(this WyswygOptions options)
     {
-        storage.Widgets.Add(new()
+        options.AddWidget(new()
         {
             Name = "Map",
             IconKind = MaterialIconKind.Map,

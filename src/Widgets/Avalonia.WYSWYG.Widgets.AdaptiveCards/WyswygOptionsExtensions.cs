@@ -2,11 +2,11 @@
 
 namespace Avalonia.WYSWYG.Widgets.AdaptiveCards;
 
-public static class AdaptiveCardWidget
+public static class WyswygOptionsExtensions
 {
-    public static void Init(WidgetStorage storage)
+    public static void AddAdaptiveCard(this WyswygOptions options)
     {
-        storage.Widgets.Add(new()
+        options.AddWidget(new()
         {
             Name = "Card",
             IconKind = MaterialIconKind.Toll,

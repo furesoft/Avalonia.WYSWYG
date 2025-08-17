@@ -1,6 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using Avalonia.WYSWYG;
+using Avalonia.WYSWYG.Widgets.AdaptiveCards;
+using Avalonia.WYSWYG.Widgets.Map;
+using Avalonia.WYSWYG.Widgets.Markdown;
 
 namespace Sandbox;
 
@@ -19,5 +23,11 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace()
+            .WithWyswyg(options =>
+            {
+                options.AddAdaptiveCard();
+                options.AddMap();
+                options.AddMarkdown();
+            })
             .UseReactiveUI();
 }
